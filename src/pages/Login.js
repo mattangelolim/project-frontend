@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Flex,
   Heading,
@@ -16,12 +16,41 @@ import {
   InputRightElement
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
+import axios from "axios";
+import { useNavigate } from "react-router-dom/dist";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [signUp, setSignUp] = useState(false)
+  const navigation = useNavigate()
+
+  const handleLoginFunction = () => {
+    try {
+      const response = axios.post("http://localhost:8080/login", {
+        email: email,
+        password: password
+      })
+
+      console.log("check", response)
+
+      if (response.data.message === "Login Success") {
+        alert("Login Successful")
+        navigation("/homepage")
+      } else {
+        alert("ETO YON")
+      }
+    } catch (error) {
+      console.error(error)
+      alert("invalid credential")
+    }
+  }
+
+
 
   const handleShowClick = () => setShowPassword(!showPassword);
 
@@ -56,7 +85,9 @@ const Login = () => {
                     pointerEvents="none"
                     children={<CFaUserAlt color="gray.300" />}
                   />
-                  <Input type="email" placeholder="email address" />
+                  <Input type="email" placeholder="email address"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </InputGroup>
               </FormControl>
               <FormControl>
@@ -69,6 +100,7 @@ const Login = () => {
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleShowClick}>
@@ -86,6 +118,7 @@ const Login = () => {
                 variant="solid"
                 colorScheme="teal"
                 width="full"
+                onClick={handleLoginFunction}
               >
                 Login
               </Button>
